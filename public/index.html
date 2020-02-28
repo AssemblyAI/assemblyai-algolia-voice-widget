@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.1.0/themes/reset-min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.1.0/themes/algolia-min.css"/>
+    <title>AssemblyAI Voice Search</title>
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            background-color: #f1f1f1;
+            font-family: "Open Sans", sans-serif;
+        }
+
+        .container{
+            padding: 0 24px;
+        }
+
+        #pagination{
+            margin-top: 1rem;
+        }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+            <h1>Algolia Voice Search</h1>
+
+            <main>
+                <div id="voice-search"></div>
+                <div id="stats"></div>
+                <div id="hits"></div>
+                <div id="pagination"></div>
+            </main>
+        </div>
+  </body>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/algoliasearch@3.32.0/dist/algoliasearchLite.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@3.0.0/dist/instantsearch.production.min.js"></script>
+
+  <script src="assemblyai-voice-widget.js"></script>
+  <script src="main.js" type="module"></script>
+</html>
