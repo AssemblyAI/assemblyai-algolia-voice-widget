@@ -29,3 +29,11 @@ search.addWidget(
 search.start();
 
 ```
+
+## Build
+```js
+git clone https://github.com/MaksymBlank/assemblyai-voice-widget
+cd assemblyai-voice-widget
+npm install
+npm start // Server is running with webpack-dev-server (http://localhost:3000)
+```
