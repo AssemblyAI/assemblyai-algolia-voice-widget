@@ -5,7 +5,8 @@
   "main": "public/assemblyai-voice-widget.js",
   "scripts": {
     "start": "webpack-dev-server",
-    "dev": "webpack --watch"
+    "dev": "webpack --watch",
+    "build": "webpack --mode=production"
   },
   "author": "Max Blank",
   "license": "ISC",
