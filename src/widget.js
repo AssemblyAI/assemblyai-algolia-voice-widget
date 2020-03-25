@@ -1,92 +1,119 @@
-  
 import AssemblyAI from './assemblyai';
-import './scss/widget.scss';
 
-class VoiceWidget {
-    constructor(options) {
-        Object.assign(this, options);
+export const assemblyAIHelper = token => ({
+  // searchAsYouSpeak,
+  // language,
+  onQueryChange,
+  onStateChange
+}) => {
+  const getDefaultState = status => ({
+    status,
+    transcript: '',
+    isSpeechFinal: false,
+    errorCode: undefined
+  });
+  let state = getDefaultState('initial');
+  const assembly = new AssemblyAI(token);
 
-        if(!options.token){
-            throw Error('AssemblyAI Token is a required option.')
-        }
+  // TODO: can be done?
+  // if (language) {
+  //   assembly.lang = language;
+  // }
+  assembly.on('start', () => {
+    setState({
+      status: 'recognizing'
+    });
+  });
 
-        this.assembly = new AssemblyAI(options.token);
+  assembly.on('error', event => {
+    setState({ status: 'error', errorCode: event.error });
+  });
+
+  assembly.on('stop', () => {
+    setState({
+      status: 'finished'
+    });
+  });
+
+  assembly.on('complete', ({ text } = {}) => {
+    if (text) {
+      setState({
+        transcript: text
+      });
+      onQueryChange(text);
+    } else {
+      setState({
+        status: 'error',
+        errorCode: 'complete without text'
+      });
+    }
+  });
+
+  // TODO: find real condition
+  const isBrowserSupported = () =>
+    Boolean(window.AudioContext || window.webkitAudioContext) &&
+    Boolean(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+
+  const isListening = () =>
+    state.status === 'askingPermission' || state.status === 'recognizing';
+
+  const setState = (newState = {}) => {
+    state = { ...state, ...newState };
+    onStateChange();
+  };
+
+  const resetState = (status = 'initial') => {
+    setState(getDefaultState(status));
+  };
+
+  const getState = () => state;
+
+  const start = () => {
+    console.log('pre start');
+    if (!assembly) {
+      return;
     }
 
-    init(initOptions) {
-        const search = val => {
-            initOptions.helper
-                .setQuery(val)
-                .search();
-        }
+    resetState('askingPermission');
 
-        const container = document.querySelector(this.container);
+    assembly.start();
+  };
 
-        container.innerHTML = `
-            <div id="assemblyai" class="assemblyai">
-                <input
-                    autocomplete="off"
-                    autocapitalize="off"
-                    type="text"
-                    placeholder="${this.placeholder || 'Say something or type something..'}">
-                <div class="assemblyai-loader">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 135 140" fill="#fff">
-                        <rect y="26.651" width="15" height="86.698" rx="6">
-                            <animate attributeName="height" begin="0.5s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120" calcMode="linear" repeatCount="indefinite"/>
-                            <animate attributeName="y" begin="0.5s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear" repeatCount="indefinite"/>
-                        </rect>
-                        <rect x="30" y="39.151" width="15" height="61.698" rx="6">
-                            <animate attributeName="height" begin="0.25s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120" calcMode="linear" repeatCount="indefinite"/>
-                            <animate attributeName="y" begin="0.25s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear" repeatCount="indefinite"/>
-                        </rect>
-                        <rect x="60" width="15" height="73.02" rx="6" y="33.49">
-                            <animate attributeName="height" begin="0s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120" calcMode="linear" repeatCount="indefinite"/>
-                            <animate attributeName="y" begin="0s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear" repeatCount="indefinite"/>
-                        </rect>
-                        <rect x="90" y="39.151" width="15" height="61.698" rx="6">
-                            <animate attributeName="height" begin="0.25s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120" calcMode="linear" repeatCount="indefinite"/>
-                            <animate attributeName="y" begin="0.25s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear" repeatCount="indefinite"/>
-                        </rect>
-                        <rect x="120" y="26.651" width="15" height="86.698" rx="6">
-                            <animate attributeName="height" begin="0.5s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120" calcMode="linear" repeatCount="indefinite"/>
-                            <animate attributeName="y" begin="0.5s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear" repeatCount="indefinite"/>
-                        </rect>
-                    </svg>
-                </div>
-                <button id="assemblyai-record" class="assemblyai-prepend">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button id="assemblyai-cancel" class="assemblyai-prepend">
-                    <i class="fas fa-check"></i>
-                </button>
-            </div>`;
-
-        let wrapper = document.querySelector('#assemblyai'),
-            record = document.querySelector('#assemblyai-record'),
-            cancel = document.querySelector('#assemblyai-cancel'),
-            input = document.querySelector('#assemblyai input');
-
-        record.addEventListener('click', () => this.assembly.start());
-        cancel.addEventListener('click', () => this.assembly.stop());
-        input.addEventListener('keyup', () => search(input.value));
-
-        this.assembly.on('start', () => wrapper.classList.add('recording'));
-        this.assembly.on('stop', () => wrapper.classList.remove('recording'));
-        this.assembly.on('error', (e) => wrapper.classList.add('disabled'));
-        this.assembly.on('complete', ({text}) => {
-            if(text){
-                input.value = text;
-                search(text);
-            }else{
-                wrapper.classList.add('shake');
-
-                setTimeout(() => {
-                    wrapper.classList.remove('shake');
-                }, 700);
-            }
-        });
-
+  const dispose = () => {
+    console.log('dispose');
+    if (!assembly) {
+      return;
     }
-}
+    assembly.stop();
 
-export default VoiceWidget;
+    assembly = undefined;
+  };
+
+  const stop = () => {
+    console.log('pre start');
+    dispose();
+    // Because `dispose` removes event listeners, `end` listener is not called.
+    // So we're setting the `status` as `finished` here.
+    // If we don't do it, it will be still `waiting` or `recognizing`.
+    resetState('finished');
+  };
+
+  const toggleListening = () => {
+    if (!isBrowserSupported()) {
+      return;
+    }
+    if (isListening()) {
+      stop();
+    } else {
+      start();
+    }
+  };
+
+  return {
+    getState,
+    isBrowserSupported,
+    isListening,
+    toggleListening,
+    dispose
+  };
+};
