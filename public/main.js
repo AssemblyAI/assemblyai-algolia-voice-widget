@@ -20,6 +20,7 @@ window.onload = () => {
     }),
     instantsearch.widgets.voiceSearch({
       container: '#voicesearch',
+      // TODO: this requires https://github.com/algolia/instantsearch.js/pull/4363
       createVoiceSearchHelper: window.assemblyAIHelper(
         'f1d93bad5b7f48979f0d4bf69267f57b'
       )
