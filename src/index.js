@@ -1,11 +1,18 @@
-import AssemblyAI from './assemblyai';
+import 'babel-polyfill';
+import AssemblyAI from './lib/assemblyai';
 
 export const assemblyAIHelper = token => ({
-  // searchAsYouSpeak,
   // language,
+  searchAsYouSpeak,
   onQueryChange,
   onStateChange
 }) => {
+  if (searchAsYouSpeak) {
+    console.warn(
+      "the assemblyAI voice helper doesn't support searchAsYouSpeak"
+    );
+  }
+
   const getDefaultState = status => ({
     status,
     transcript: '',

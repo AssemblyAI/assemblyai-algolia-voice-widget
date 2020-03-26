@@ -1,6 +1,5 @@
-import 'babel-polyfill';
-import VAD from './lib/vad';
-import axios from 'axios';
+import VAD from './vad';
+import { request } from './request';
 import Recorder from 'recorder-js';
 import resampler from 'audio-resampler';
 import createBuffer from 'audio-buffer-from';
@@ -27,45 +26,55 @@ export default class AssemblyAI {
   /**
    * Function that starts the recording
    */
-  async start() {
-    const constraints = {
-      audio: {
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false
-      }
-    };
-
-    // Init recorder on start to prevent autoplay issue (user has to interact with the page first.)
-    if (!this.recorder) {
-      const audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)();
-      this.recorder = new Recorder(audioContext);
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-
-        this.recorder.init(stream);
-
-        this.source = audioContext.createMediaStreamSource(stream);
-
-        new VAD({
-          source: this.source,
-          voice_stop: () => {
-            if (this.isRecording) {
-              this.stop();
-            }
-          }
-        });
-      } catch (err) {
-        this.callbacks.error(err);
-      }
+  start() {
+    if (
+      this.source &&
+      this.source.context &&
+      typeof this.source.context.resume === 'function'
+    ) {
+      this.source.context.resume();
     }
 
-    this.recorder.start().then(() => {
-      this.isRecording = true;
-      this.callbacks.start();
-    });
+    return Promise.resolve()
+      .then(() => {
+        if (!this.recorder) {
+          const audioContext = new (window.AudioContext ||
+            window.webkitAudioContext)();
+          this.recorder = new Recorder(audioContext);
+
+          return navigator.mediaDevices
+            .getUserMedia({
+              audio: {
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false
+              }
+            })
+            .then(stream => {
+              this.recorder.init(stream);
+
+              this.source = audioContext.createMediaStreamSource(stream);
+
+              new VAD({
+                source: this.source,
+                voice_stop: () => {
+                  if (this.isRecording) {
+                    this.stop();
+                  }
+                }
+              });
+            })
+            .catch(err => {
+              this.callbacks.error(err);
+            });
+        }
+      })
+      .then(() => {
+        this.recorder.start().then(() => {
+          this.isRecording = true;
+          this.callbacks.start();
+        });
+      });
   }
 
   /**
@@ -74,17 +83,41 @@ export default class AssemblyAI {
   stop() {
     this.isRecording = false;
     this.callbacks.stop();
-    this.recorder.stop().then(({ buffer }) => {
-      resampler(
-        createBuffer(buffer[0]),
-        this.PCM_DATA_SAMPLE_RATE,
-        ({ getAudioBuffer }) => {
-          const wav = this._createWaveFileData(getAudioBuffer());
 
-          this._transcribe(btoa(this._uint8ToString(wav)));
+    const stopRecording = () => {
+      if (
+        this.source &&
+        this.source.mediaStream &&
+        typeof this.source.mediaStream.getTracks === 'function'
+      ) {
+        const tracks = this.source.mediaStream.getTracks();
+        // we need to make a new recorder for every time the user presses the button,
+        // otherwise we keep recording.
+        tracks.forEach(track => track.stop());
+        this.recorder = undefined;
+      }
+    };
+
+    return Promise.resolve()
+      .then(() => {
+        if (this.recorder) {
+          return this.recorder.stop();
         }
-      );
-    });
+        throw new Error('no recorder');
+      })
+      .then(({ buffer }) => {
+        resampler(
+          createBuffer(buffer[0]),
+          this.PCM_DATA_SAMPLE_RATE,
+          ({ getAudioBuffer }) => {
+            const wav = this._createWaveFileData(getAudioBuffer());
+
+            this._transcribe(btoa(this._uint8ToString(wav)));
+          }
+        );
+      })
+      .then(stopRecording)
+      .catch(stopRecording);
   }
 
   /**
@@ -120,23 +153,20 @@ export default class AssemblyAI {
    * Function that gets a transcript from AssemblyAI API.
    * @param {base64} audio_data Audio recording.
    */
-  async _transcribe(audio_data) {
-    try {
-      const { data } = await axios({
-        method: 'POST',
-        url: API_ENDPOINT,
-        data: { audio_data },
-        headers: {
-          authorization: this.token,
-          'Content-Type': 'application/json; charset=utf-8'
-        },
-        responseType: 'json'
-      });
-
-      this.callbacks.complete(data);
-    } catch (e) {
-      this.callbacks.complete();
-    }
+  _transcribe(audio_data) {
+    return request(API_ENDPOINT, {
+      method: 'POST',
+      body: JSON.stringify({ audio_data }),
+      headers: {
+        authorization: this.token,
+        'Content-Type': 'application/json; charset=utf-8'
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        this.callbacks.complete(data);
+      })
+      .catch(() => this.callbacks.complete());
   }
 
   _uint8ToString(buf) {
