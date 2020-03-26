@@ -19,6 +19,7 @@ export const assemblyAIHelper = token => ({
   // if (language) {
   //   assembly.lang = language;
   // }
+
   assembly.on('start', () => {
     setState({
       status: 'recognizing'
@@ -49,7 +50,6 @@ export const assemblyAIHelper = token => ({
     }
   });
 
-  // TODO: find real condition
   const isBrowserSupported = () =>
     Boolean(window.AudioContext || window.webkitAudioContext) &&
     Boolean(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
@@ -69,7 +69,6 @@ export const assemblyAIHelper = token => ({
   const getState = () => state;
 
   const start = () => {
-    console.log('pre start');
     if (!assembly) {
       return;
     }
@@ -80,7 +79,6 @@ export const assemblyAIHelper = token => ({
   };
 
   const dispose = () => {
-    console.log('dispose');
     if (!assembly) {
       return;
     }
@@ -90,8 +88,7 @@ export const assemblyAIHelper = token => ({
   };
 
   const stop = () => {
-    console.log('pre start');
-    dispose();
+    assembly.stop();
     // Because `dispose` removes event listeners, `end` listener is not called.
     // So we're setting the `status` as `finished` here.
     // If we don't do it, it will be still `waiting` or `recognizing`.
