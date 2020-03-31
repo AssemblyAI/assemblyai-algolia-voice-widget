@@ -4,8 +4,8 @@
   "description": "",
   "main": "public/assemblyai-voice-widget.js",
   "scripts": {
-    "start": "webpack-dev-server",
-    "dev": "webpack --watch"
+    "dev": "webpack-dev-server",
+    "build": "webpack --mode=production"
   },
   "author": "Max Blank",
   "license": "ISC",
@@ -27,7 +27,6 @@
     "audio-recorder-polyfill": "^0.2.0",
     "audio-resampler": "^1.0.1",
     "audiobuffer-to-wav": "^1.0.0",
-    "axios": "^0.19.2",
     "babel-polyfill": "^6.26.0",
     "detect-browser": "^4.8.0",
     "recorder-js": "^1.0.7"

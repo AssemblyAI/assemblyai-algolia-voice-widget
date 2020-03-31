@@ -1,47 +1,40 @@
-const VoiceWidget = window.AssemblyAIVoiceWidget;
-
 window.onload = () => {
-    const search = instantsearch({
-        indexName: 'MOVIE',
-        searchClient: algoliasearch('0508K6IM94', '390b7bccd0c4d78520d52f7c93e0889b'),
-        routing: true
-    });
+  const search = instantsearch({
+    indexName: 'movies',
+    searchClient: algoliasearch('latency', '6be0576ff61c053d5f9a3225e2a90f76')
+  });
 
-    search.addWidget(
-        instantsearch.widgets.configure({
-            hitsPerPage: 12
-        })
-    );
+  search.addWidgets([
+    instantsearch.widgets.configure({
+      hitsPerPage: 12
+    }),
+    instantsearch.widgets.hits({
+      container: '#hits',
+      templates: {
+        empty: 'No results',
+        item: `<span>{{{title}}} ({{{year}}})</span>`
+      }
+    }),
+    instantsearch.widgets.searchBox({
+      container: '#searchbox'
+    }),
+    instantsearch.widgets.voiceSearch({
+      container: '#voicesearch',
+      // TODO: this requires https://github.com/algolia/instantsearch.js/pull/4363
+      createVoiceSearchHelper: window.assemblyAIHelper(
+        'f1d93bad5b7f48979f0d4bf69267f57b'
+      )
+    }),
+    instantsearch.widgets.voiceSearch({
+      container: '#voicesearch-alt'
+    }),
+    instantsearch.widgets.pagination({
+      container: '#pagination'
+    }),
+    instantsearch.widgets.stats({
+      container: '#stats'
+    })
+  ]);
 
-    search.addWidget(
-        instantsearch.widgets.hits({
-            container: '#hits',
-            templates: {
-            empty: 'No results',
-            item: `<span>{{{title}}} ({{{year}}})</span>`
-            }
-        })
-    );
-
-    search.addWidget(
-        new VoiceWidget({
-            container: '#voice-search',
-            placeholder: 'Search for movies', // Input Placeholder
-            token: 'f1d93bad5b7f48979f0d4bf69267f57b' // AssemblyAI token
-        })
-    );
-
-    search.addWidget(
-        instantsearch.widgets.pagination({
-            container: '#pagination'
-        })
-    );
-
-    search.addWidget(
-        instantsearch.widgets.stats({
-            container: '#stats'
-        })
-    );
-
-    search.start();
-}
+  search.start();
+};
