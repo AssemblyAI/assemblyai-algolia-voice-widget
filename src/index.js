@@ -34,7 +34,7 @@ export const assemblyAIHelper = token => ({
   });
 
   assembly.on('error', event => {
-    setState({ status: 'error', errorCode: event.error });
+    setState({ status: 'error', errorCode: event.error || 'Something went wrong' });
   });
 
   assembly.on('stop', () => {
@@ -44,17 +44,10 @@ export const assemblyAIHelper = token => ({
   });
 
   assembly.on('complete', ({ text } = {}) => {
-    if (text) {
-      setState({
-        transcript: text
-      });
-      onQueryChange(text);
-    } else {
-      setState({
-        status: 'error',
-        errorCode: 'complete without text'
-      });
-    }
+    setState({
+      transcript: text
+    });
+    onQueryChange(text);
   });
 
   const isBrowserSupported = () =>

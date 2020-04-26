@@ -154,7 +154,7 @@ export default class AssemblyAI {
    * @param {base64} audio_data Audio recording.
    */
   _transcribe(audio_data) {
-    return request(API_ENDPOINT, {
+    return request(`${API_ENDPOINT}${this.PCM_DATA_SAMPLE_RATE > 8000 ? '?algoliaWidgetSafari=1' : ''}`, {
       method: 'POST',
       body: JSON.stringify({ audio_data }),
       headers: {
@@ -166,7 +166,9 @@ export default class AssemblyAI {
       .then(data => {
         this.callbacks.complete(data);
       })
-      .catch(() => this.callbacks.complete());
+      .catch((e) => {
+        this.callbacks.error(e);
+      });
   }
 
   _uint8ToString(buf) {

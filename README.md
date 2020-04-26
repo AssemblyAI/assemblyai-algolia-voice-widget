@@ -1,30 +1,33 @@
 # AssemblyAI Voice Search Widget
 
-## Installation
-```js
-npm install ... --save
+## Getting started
+### 1: Include AssemblyAI
+```html
+<script src="https://cdn.assemblyai.com/scripts/assemblyai-voice-helper.js"></script>
 ```
 
-## Usage
+### 2. Configure Algolia InstantSearch
 ```js
-import AssemblyAIVoiceWidget from '...';
-
 const search = instantsearch({
     indexName: '...',
     searchClient: algoliasearch('...', '...'),
 });
 
-search.addWidget(
-    instantsearch.widgets.hits({ container: '#hits' });
-);
-
-search.addWidget(
-    new AssemblyAIVoiceWidget({
-        container: '#voice-search',
-        placeholder: 'Search for movies', // Input Placeholder
-        token: '...' // AssemblyAI token
-    })
-);
+search.addWidgets([
+    instantsearch.widgets.hits({
+      container: '#hits',
+    }),
+    instantsearch.widgets.searchBox({
+      container: '#searchbox'
+    }),
+    instantsearch.widgets.voiceSearch({
+      container: '#voicesearch',
+      createVoiceSearchHelper: window.assemblyAIHelper(
+        '...' // Your AssemblyAI API Key
+      )
+    }),
+    // ... other configurations
+]);
 
 search.start();
 
@@ -35,5 +38,13 @@ search.start();
 git clone https://github.com/MaksymBlank/assemblyai-voice-widget
 cd assemblyai-voice-widget
 npm install
-npm start // Server is running with webpack-dev-server (http://localhost:3000)
+npm run build
+```
+
+## Development
+```js
+git clone https://github.com/MaksymBlank/assemblyai-voice-widget
+cd assemblyai-voice-widget
+npm install
+npm run dev // Server is running with webpack-dev-server (http://localhost:3000)
 ```

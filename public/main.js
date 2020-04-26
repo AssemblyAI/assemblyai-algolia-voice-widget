@@ -23,11 +23,20 @@ window.onload = () => {
       // TODO: this requires https://github.com/algolia/instantsearch.js/pull/4363
       createVoiceSearchHelper: window.assemblyAIHelper(
         'f1d93bad5b7f48979f0d4bf69267f57b'
-      )
+      ),
+      cssClasses: {
+        button: ['button']
+      },
+      templates: {
+        status: ({errorCode}) => Boolean(errorCode) ? `<div class="alert">${errorCode}</div>` : ''
+      }
     }),
-    instantsearch.widgets.voiceSearch({
-      container: '#voicesearch-alt'
-    }),
+    // instantsearch.widgets.voiceSearch({
+    //   container: '#voicesearch-alt',
+    //   cssClasses: {
+    //     button: ['button']
+    //   },
+    // }),
     instantsearch.widgets.pagination({
       container: '#pagination'
     }),

@@ -35,7 +35,13 @@ export function request(url, options) {
           all.push([key, value]);
           headers[key] = headers[key] ? `${headers[key]},${value}` : value;
         });
-      resolve(response());
+        const res = response();
+
+        if(!res.ok){
+          return reject(JSON.parse(request.responseText));
+        }
+
+      resolve(res);
     };
 
     request.onerror = reject;
