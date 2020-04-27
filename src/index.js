@@ -1,6 +1,8 @@
 import 'babel-polyfill';
 import AssemblyAI from './lib/assemblyai';
 
+import './scss/main.scss';
+
 export const assemblyAIHelper = token => ({
   // language,
   searchAsYouSpeak,
@@ -59,6 +61,15 @@ export const assemblyAIHelper = token => ({
 
   const setState = (newState = {}) => {
     state = { ...state, ...newState };
+
+    if(document.querySelector('.AssemblyAIHelper')){
+      if(isListening()){
+        document.querySelector('.AssemblyAIHelper').classList.add('AssemblyAIHelper--listening');
+      }else{
+        document.querySelector('.AssemblyAIHelper').classList.remove('AssemblyAIHelper--listening');
+      }
+    }
+
     onStateChange();
   };
 

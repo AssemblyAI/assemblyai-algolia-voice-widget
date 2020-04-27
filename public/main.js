@@ -25,18 +25,12 @@ window.onload = () => {
         'f1d93bad5b7f48979f0d4bf69267f57b'
       ),
       cssClasses: {
-        button: ['button']
+        root: ['AssemblyAIHelper'] // Add AssemblyAI stylings or use your own
       },
       templates: {
-        status: ({errorCode}) => Boolean(errorCode) ? `<div class="alert">${errorCode}</div>` : ''
+        status: ({errorCode}) => Boolean(errorCode) ? `<div>${errorCode}</div>` : ''
       }
     }),
-    // instantsearch.widgets.voiceSearch({
-    //   container: '#voicesearch-alt',
-    //   cssClasses: {
-    //     button: ['button']
-    //   },
-    // }),
     instantsearch.widgets.pagination({
       container: '#pagination'
     }),
