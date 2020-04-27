@@ -3,3 +3,5 @@ node_modules/
 public/assemblyai-voice-helper.js
 
 .firebase/
+.firebaserc
+firebase.json
