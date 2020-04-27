@@ -164,6 +164,10 @@ export default class AssemblyAI {
     })
       .then(res => res.json())
       .then(data => {
+        if(!data.text){
+          return this.callbacks.error({error: 'No speech detected. Please try again'});
+        }
+
         this.callbacks.complete(data);
       })
       .catch((e) => {
