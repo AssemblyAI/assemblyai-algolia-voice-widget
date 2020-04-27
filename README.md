@@ -24,7 +24,13 @@ search.addWidgets([
       container: '#voicesearch',
       createVoiceSearchHelper: window.assemblyAIHelper(
         '...' // Your AssemblyAI API Key
-      )
+      ),
+      cssClasses: {
+        root: ['AssemblyAIHelper'] // Add AssemblyAI stylings or use your own
+      },
+      templates: {
+        status: ({errorCode}) => Boolean(errorCode) ? `<div>${errorCode}</div>` : '' // AssemblyAI error handling
+      }
     }),
     // ... other configurations
 ]);
