@@ -18,7 +18,7 @@ Using this widget, you can effortlessly add voice search to your website and/or 
 
 ### 2. Configure Algolia InstantSearch
 
-> The below Voice Search Widget requires you have an AssemblyAI Token, which you can get [here]()
+> The below Voice Search Widget requires you have an AssemblyAI Token, which you can get [here](#getting-an-assemblyai-api-token)
 
 ```js
 const search = instantsearch({
