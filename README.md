@@ -13,7 +13,7 @@ Using this widget, you can effortlessly add voice search to your website and/or 
 ### 1: Include AssemblyAI
 
 ```html
-<script src="https://cdn.assemblyai.com/scripts/assemblyai-voice-helper.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/assemblyai/assemblyai-algolia-voice-widget/public/assemblyai-voice-helper.js"></script>
 ```
 
 ### 2. Configure Algolia InstantSearch
