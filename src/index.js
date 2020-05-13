@@ -36,7 +36,10 @@ export const assemblyAIHelper = token => ({
   });
 
   assembly.on('error', event => {
-    setState({ status: 'error', errorCode: event.error || 'Something went wrong' });
+    setState({
+      status: 'error',
+      errorCode: event.error || 'Something went wrong'
+    });
   });
 
   assembly.on('stop', () => {
@@ -62,11 +65,15 @@ export const assemblyAIHelper = token => ({
   const setState = (newState = {}) => {
     state = { ...state, ...newState };
 
-    if(document.querySelector('.AssemblyAIHelper')){
-      if(isListening()){
-        document.querySelector('.AssemblyAIHelper').classList.add('AssemblyAIHelper--listening');
-      }else{
-        document.querySelector('.AssemblyAIHelper').classList.remove('AssemblyAIHelper--listening');
+    if (document.querySelector('.AssemblyAIHelper')) {
+      if (isListening()) {
+        document
+          .querySelector('.AssemblyAIHelper')
+          .classList.add('AssemblyAIHelper--listening');
+      } else {
+        document
+          .querySelector('.AssemblyAIHelper')
+          .classList.remove('AssemblyAIHelper--listening');
       }
     }
 
@@ -79,7 +86,7 @@ export const assemblyAIHelper = token => ({
 
   const getState = () => state;
 
-  const start = () => {
+  const startListening = () => {
     if (!assembly) {
       return;
     }
@@ -98,7 +105,7 @@ export const assemblyAIHelper = token => ({
     assembly = undefined;
   };
 
-  const stop = () => {
+  const stopListening = () => {
     assembly.stop();
     // Because `dispose` removes event listeners, `end` listener is not called.
     // So we're setting the `status` as `finished` here.
@@ -106,22 +113,12 @@ export const assemblyAIHelper = token => ({
     resetState('finished');
   };
 
-  const toggleListening = () => {
-    if (!isBrowserSupported()) {
-      return;
-    }
-    if (isListening()) {
-      stop();
-    } else {
-      start();
-    }
-  };
-
   return {
     getState,
     isBrowserSupported,
     isListening,
-    toggleListening,
+    startListening,
+    stopListening,
     dispose
   };
 };
