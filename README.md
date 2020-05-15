@@ -76,7 +76,7 @@ AssemblyAI is a [Speech-to-Text API](https://www.assemblyai.com/) that can conve
 
 1. Register for an AssemblyAI API token [here](https://app.assemblyai.com/login/)
 1. Add a credit card to your AssemblyAI account [here](https://app.assemblyai.com/dashboard/account/)
-1. Pricing is billed at **$0.0005 per second of audio transcribed**. 
+1. Pricing is billed at **$0.008 per request to AssemblyAI**. 
 
 # Feedback and Support
 
