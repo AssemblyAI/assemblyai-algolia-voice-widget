@@ -5,7 +5,7 @@ import resampler from 'audio-resampler';
 import createBuffer from 'audio-buffer-from';
 import { detect } from 'detect-browser';
 
-const API_ENDPOINT = 'https://api.assemblyai.com/v2/stream';
+const API_ENDPOINT = 'https://api.assemblyai.com/v2/stream/avs';
 
 export default class AssemblyAI {
   constructor(token) {
@@ -156,7 +156,7 @@ export default class AssemblyAI {
   _transcribe(audio_data) {
     return request(`${API_ENDPOINT}${this.PCM_DATA_SAMPLE_RATE > 8000 ? '?algoliaWidgetSafari=1' : ''}`, {
       method: 'POST',
-      body: JSON.stringify({ audio_data }),
+      body: JSON.stringify({ audio_data, sample_rate: this.PCM_DATA_SAMPLE_RATE}),
       headers: {
         authorization: this.token,
         'Content-Type': 'application/json; charset=utf-8'

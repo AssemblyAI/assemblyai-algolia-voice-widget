@@ -36,7 +36,7 @@ search.addWidgets([
     instantsearch.widgets.voiceSearch({
       container: '#voicesearch',
       createVoiceSearchHelper: window.assemblyAIHelper(
-        '...' // Your AssemblyAI API Token
+        'xxxxxxxxxxxxxxx' // Your AssemblyAI API Token
       ),
       cssClasses: {
         root: ['AssemblyAIHelper'] // Add AssemblyAI stylings or use your own
@@ -87,7 +87,7 @@ For questions about AssemblyAI, please email support@assemblyai.com. For questio
 ## Build
 
 ```js
-git clone https://github.com/MaksymBlank/assemblyai-voice-widget
+https://github.com/AssemblyAI/assemblyai-algolia-voice-widget
 cd assemblyai-voice-widget
 npm install
 npm run build
@@ -95,7 +95,7 @@ npm run build
 
 ## Development
 ```js
-git clone https://github.com/MaksymBlank/assemblyai-voice-widget
+https://github.com/AssemblyAI/assemblyai-algolia-voice-widget
 cd assemblyai-voice-widget
 npm install
 npm run dev // Server is running with webpack-dev-server (http://localhost:3000)
