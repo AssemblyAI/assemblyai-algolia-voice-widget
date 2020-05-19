@@ -8,7 +8,7 @@ import { detect } from 'detect-browser';
 const API_ENDPOINT = 'https://api.assemblyai.com/v2/stream/avs';
 
 export default class AssemblyAI {
-  constructor(token) {
+  constructor(token, params = {}) {
     this.token = token;
     this.PCM_DATA_SAMPLE_RATE = detect().name === 'safari' ? 44100 : 8000;
 
@@ -21,6 +21,37 @@ export default class AssemblyAI {
       complete: () => {},
       error: () => {}
     };
+
+    const _params = {};
+
+    if(params.word_boost){
+      if(params.word_boost.length > 100){
+        setTimeout(() => {
+          this.callbacks.error({error: 'The word_boost parameter can be a max of 100 terms'});
+        }, 4);
+        return;
+      }
+      if(!params.word_boost.every(v => typeof v === 'string')){
+        setTimeout(() => {
+          this.callbacks.error({error: 'The word_boost parameter only accepts string terms'});
+        }, 4);
+        return;
+      }
+      _params['word_boost'] = params.word_boost;
+    }
+
+    if(params.format_text !== undefined){
+      if(typeof params.format_text !== 'boolean'){
+        setTimeout(() => {
+          this.callbacks.error({error: 'The format_text parameter only accepts boolean values (true / false)'});
+        }, 4);
+        return;
+      }
+
+      _params['format_text'] = params.format_text;
+    }
+
+    this.params = _params;
   }
 
   /**
@@ -156,7 +187,7 @@ export default class AssemblyAI {
   _transcribe(audio_data) {
     return request(`${API_ENDPOINT}${this.PCM_DATA_SAMPLE_RATE > 8000 ? '?algoliaWidgetSafari=1' : ''}`, {
       method: 'POST',
-      body: JSON.stringify({ audio_data, sample_rate: this.PCM_DATA_SAMPLE_RATE}),
+      body: JSON.stringify({ audio_data, sample_rate: this.PCM_DATA_SAMPLE_RATE, ...this.params}),
       headers: {
         authorization: this.token,
         'Content-Type': 'application/json; charset=utf-8'
