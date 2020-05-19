@@ -86,6 +86,11 @@ export default class AssemblyAI {
 
               this.source = audioContext.createMediaStreamSource(stream);
 
+              this.recordingTimer = setTimeout(() => {
+                console.log('AssemblyAI: Recording stopped because it has reached the limit of 15 seconds.');
+                this.stop();
+              }, 15000);
+
               new VAD({
                 source: this.source,
                 voice_stop: () => {
@@ -114,6 +119,10 @@ export default class AssemblyAI {
   stop() {
     this.isRecording = false;
     this.callbacks.stop();
+
+    if(this.recordingTimer){
+      clearTimeout(this.recordingTimer);
+    }
 
     const stopRecording = () => {
       if (
