@@ -25,14 +25,6 @@ export default function VAD(options) {
     }
   }
 
-  // Require source
-  if (!this.options.source) {
-    throw new Error('The options must specify a MediaStreamAudioSourceNode.');
-  }
-
-  // Set this.options.context
-  this.options.context = this.options.source.context;
-
   // Calculate time relationships
   this.hertzPerBin = this.options.context.sampleRate / this.options.fftSize;
   this.iterationFrequency =
@@ -84,41 +76,17 @@ export default function VAD(options) {
   this.voiceTrendStart = 5;
   this.voiceTrendEnd = -5;
 
-  // Create analyser
-  this.analyser = this.options.context.createAnalyser();
-  this.analyser.smoothingTimeConstant = this.options.smoothingTimeConstant; // 0.99;
-  this.analyser.fftSize = this.options.fftSize;
-
-  this.floatFrequencyData = new Float32Array(this.analyser.frequencyBinCount);
+  this.floatFrequencyData = new Float32Array(255);
 
   // Setup local storage of the Linear FFT data
-  this.floatFrequencyDataLinear = new Float32Array(
-    this.floatFrequencyData.length
-  );
-
-  // Connect this.analyser
-  this.options.source.connect(this.analyser);
-
-  // Create ScriptProcessorNode
-  this.scriptProcessorNode = this.options.context.createScriptProcessor(
-    this.options.bufferLen,
-    1,
-    1
-  );
-
-  // Connect scriptProcessorNode (Theretically, not required)
-  this.scriptProcessorNode.connect(this.options.context.destination);
+  this.floatFrequencyDataLinear = new Float32Array(255);
 
   // Create callback to update/analyze floatFrequencyData
-  var self = this;
-  this.scriptProcessorNode.onaudioprocess = function(event) {
-    self.analyser.getFloatFrequencyData(self.floatFrequencyData);
-    self.update();
-    self.monitor();
-  };
-
-  // Connect scriptProcessorNode
-  this.options.source.connect(this.scriptProcessorNode);
+  options.onaudioprocess((data) => {
+    this.floatFrequencyData = data;
+    this.update();
+    this.monitor();
+  })
 
   // log stuff
   this.logging = false;
