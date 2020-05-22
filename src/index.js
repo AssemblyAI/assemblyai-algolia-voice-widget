@@ -3,7 +3,7 @@ import AssemblyAI from './lib/assemblyai';
 
 import './scss/main.scss';
 
-export const assemblyAIHelper = token => ({
+export const assemblyAIHelper = (token, params) => ({
   // language,
   searchAsYouSpeak,
   onQueryChange,
@@ -22,7 +22,7 @@ export const assemblyAIHelper = token => ({
     errorCode: undefined
   });
   let state = getDefaultState('initial');
-  const assembly = new AssemblyAI(token);
+  const assembly = new AssemblyAI(token, params);
 
   // TODO: can be done?
   // if (language) {

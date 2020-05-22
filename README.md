@@ -36,7 +36,11 @@ search.addWidgets([
     instantsearch.widgets.voiceSearch({
       container: '#voicesearch',
       createVoiceSearchHelper: window.assemblyAIHelper(
-        'xxxxxxxxxxxxxxx' // Your AssemblyAI API Token
+        'xxxxxxxxxxxxxxx', // Your AssemblyAI API Token
+        {
+          word_boost: ['AssemblyAI', 'Google', 'Facebook'], // AssemblyAI word_boost parameter. See: https://docs.assemblyai.com/all-guides/synchronous-transcription-for-short-audio-files#boost
+          format_text: true // AssemblyAI format_text parameter. See: https://docs.assemblyai.com/all-guides/synchronous-transcription-for-short-audio-files#format
+        }
       ),
       cssClasses: {
         root: ['AssemblyAIHelper'] // Add AssemblyAI stylings or use your own
