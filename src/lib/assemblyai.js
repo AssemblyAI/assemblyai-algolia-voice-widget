@@ -11,7 +11,7 @@ export default class AssemblyAI {
 
     const browser = navigator && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-    this.PCM_DATA_SAMPLE_RATE = browser ? 44100 : 8000;
+    this.PCM_DATA_SAMPLE_RATE = browser ? 44100 : 16000;
 
     console.log(`Running on Safari: ${browser}`);
 
